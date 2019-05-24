@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>管理员个人中心Frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+    header {
+        height: 150px;
+        padding-top: 8px;
+        background-color: #e3007f;
+    }
+
+    header .icon-panel {
+        width: 100%;
+        height: 86px;
+        text-align: center;
+    }
+
+    header .icon-panel .icon {
+        display: inline-block;
+        box-sizing: border-box;
+        width: 86px;
+        height: 86px;
+        border: 3px solid #b10063;
+        border-radius: 86px;
+        background-repeat: no-repeat;
+        background-image: url(../image/default_square.png);
+        background-size: 100% 100%;
+        background-position: center center;
+    }
+
+    header .username {
+        height: 30px;
+        line-height: 30px;
+        font-size: 14px;
+        color: #fff;
+        text-align: center;
+    }
+
+    header .account-info {
+        height: 30px;
+        line-height: 30px;
+        font-size: 12px;
+        color: #fff;
+        text-align: center;
+    }
+
+    .option {
+        position: relative;
+        box-sizing: border-box;
+        width: 100%;
+        height: 61px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .option .icon {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 40px;
+        height: 60px;
+        background-repeat: no-repeat;
+        background-position: 12px center;
+        background-size: auto 20px;
+    }
+
+    .option .icon-myorder {
+        background-image: url(../image/img_item_myorder.png);
+    }
+
+    .option .icon-account {
+        background-image: url(../image/icon_user_info_accounts.png);
+    }
+
+    .option .icon-coupon {
+        background-image: url(../image/icon_user_coupon.png);
+        background-position: 8px center;
+    }
+
+    .option .icon-address {
+        background-image: url(../image/item_user_address.png);
+    }
+
+    .option .title {
+        position: relative;
+        box-sizing: border-box;
+        width: 100%;
+        height: 60px;
+        padding-left: 40px;
+        font-size: 14px;
+        color: #444;
+        text-align: left;
+        line-height: 60px;
+    }
+
+    .option .arrow-panel {
+        position: absolute;
+        top: 0;
+        right: 12px;
+        width: auto;
+        height: 60px;
+        background-image: url(../image/arrow_right.png);
+        background-repeat: no-repeat;
+        background-size: 16px 24px;
+        background-position: right center;
+    }
+
+    .option .arrow-panel .text {
+        box-sizing: border-box;
+        padding-right: 20px;
+        width: auto;
+        height: 60px;
+        line-height: 60px;
+        font-size: 13px;
+        color: #888;
+        text-align: left;
+    }
+
+    .highlight {
+        opacity: 0.7;
+    }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="icon-panel" tapmode onclick="fnSetAvatar()">
+            <div id="icon" class="icon"></div>
+        </div>
+        <div id="username" class="username"></div>
+        <!-- <div class="account-info">余额：￥0</div> -->
+    </header>
+    <section>
+        <div class="option" tapmode onclick="fnOpenOrderManagementWin();">
+            <div class="icon icon-myorder"></div>
+            <div class="title">订单管理</div>
+            <div class="arrow-panel">
+                <div class="text">查看所有订单详情</div>
+            </div>
+        </div>
+        <!-- <div class="option">
+            <div class="icon icon-account"></div>
+            <div class="title">我的账户</div>
+            <div class="arrow-panel">
+                <div class="text">充值有礼</div>
+            </div>
+        </div> -->
+        <!-- <div class="option">
+            <div class="icon icon-coupon"></div>
+            <div class="title">优惠卷</div>
+            <div class="arrow-panel">
+                <div class="text">查看我的优惠卷</div>
+            </div>
+        </div> -->
+        <div class="option" tapmode onclick="fnOpenSalesStatisticsWin();">
+            <div class="icon icon-address"></div>
+            <div class="title">销售统计</div>
+            <div class="arrow-panel">
+                <div class="text">查看销售统计信息</div>
+            </div>
+        </div>
+    </section>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+apiready = function() {
+    fnGetUserInfo();
+};
+
+function fnGetUserInfo(){
+    var userInfo = $api.getStorage('userInfo');
+    var username = $api.byId('username');
+    api.ajax({
+        url: 'https://d.apicloud.com/mcm/api/user/' + userInfo.userId,
+        method: 'get',
+        headers: {
+            "X-APICloud-AppId":	"A6000926714852",
+            "X-APICloud-AppKey":"5fe9e06dfbe11c046d6e760665bd6b335d6173b6.1556419150650",
+            "Authorization":userInfo.id
+        }
+    },function(ret, err){
+        if (ret) {
+            //alert( JSON.stringify( ret ) );
+            username.innerHTML = ret.username;
+            fnUpdateLocalAvatar(ret);
+        } else {
+            alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+function fnOpenOrderManagementWin() {
+    api.openWin({
+        name: 'ordermanagement',
+        url: './ordermanagement.html'
+    });
+}
+
+function fnSetAvatar(){
+    api.actionSheet({
+        title: '选择',
+        cancelTitle: '取消',
+        buttons: ['拍照','从相册选择图片']
+    }, function(ret, err){
+        if( ret ){
+            //alert( JSON.stringify( ret ) );
+            var sourceTypes = [
+                'camera',
+                'album'
+            ];
+            if(ret.buttonIndex == 3){
+                return;
+            }
+            api.getPicture({
+                sourceType: sourceTypes[ret.buttonIndex - 1],
+                allowEdit: true,
+                quality: 50,
+                targetWidth: 100,
+                targetHeight: 100,
+                saveToPhotoAlbum: false
+            }, function(ret, err){
+                if(ret){
+                    //alert(JSON.stringify(ret));
+                    if(ret.data==""){
+                        return;
+                    }
+                    fnUploadAvatar(ret.data);      //把图片的本地路径传给fnUploadAvatar从而传到服务器上
+                }else{
+                    alert(JSON.stringify(err));
+                }
+            });
+        }else{
+            alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+function fnUploadAvatar(avatarUrl_){
+    api.ajax({
+        url: 'https://d.apicloud.com/mcm/api/file',
+        method: 'post',
+        headers: {
+          "X-APICloud-AppId":	"A6000926714852",
+          "X-APICloud-AppKey":"5fe9e06dfbe11c046d6e760665bd6b335d6173b6.1556419150650"
+        },
+        data: {
+            values: {
+                filename: 'icon'
+            },
+            files: {
+                file: avatarUrl_
+            }
+        }
+    },function(ret, err){
+        if (ret) {
+            //alert( JSON.stringify( ret ) );
+            fnUpdateUserAvatar(ret);      //把图片在服务器上的信息传给fnUpdateUserAvatar从而更改用户的头像
+        } else {
+            alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+function fnUpdateUserAvatar(avatar_){
+    var userInfo = $api.getStorage('userInfo');
+    api.ajax({
+        url: 'https://d.apicloud.com/mcm/api/user/' + userInfo.userId,
+        method: 'put',
+        headers: {
+          "X-APICloud-AppId":	"A6000926714852",
+          "X-APICloud-AppKey":"5fe9e06dfbe11c046d6e760665bd6b335d6173b6.1556419150650",
+          "Authorization":userInfo.id
+        },
+        data: {
+            values: {
+                avatar: avatar_
+            }
+        }
+    },function(ret, err){
+        if (ret) {
+            //alert( JSON.stringify( ret ) );
+            fnUpdateLocalAvatar(ret);      //返回用户相关的信息，传给fnUpdateLocalAvatar来更新本地头像
+        } else {
+            alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+function fnUpdateLocalAvatar(data_){
+    var icon = $api.byId('icon');
+    if(!data_.avatar){
+        return;
+    }
+    api.imageCache({
+        url: data_.avatar.url
+    }, function(ret, err){
+        if( ret ){
+             //alert( JSON.stringify( ret ) );
+             icon.style.background = 'url(' + ret.url + ')';
+        }else{
+             alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+function fnOpenSalesStatisticsWin(){
+    api.openWin({
+        name: 'salesStatistics',
+        url: './salesStatistics.html',
+    });    
+}
+
+</script>
+
+</html>

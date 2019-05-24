@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>管理员订单管理Frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+    html {
+        height: 100%;
+    }
+
+    body {
+        min-height: 100%;
+        background-color: #f0f0f0;
+    }
+
+    .list {
+        display: none;
+        position: relative;
+        width: 100%;
+        height: auto;
+    }
+
+    .list .address {
+        position: relative;
+        box-sizing: border-box;
+        width: 100%;
+        height: auto;
+        margin-bottom: 1px;
+        padding: 8px 16px;
+        background-color: #fff;
+    }
+
+    .list .address .icon {
+        position: absolute;
+        top: 21px;
+        left: 16px;
+        width: 19px;
+        height: 24px;
+        background-image: url(../image/icon_address.png);
+        background-repeat: no-repeat;
+        background-size: auto 20px;
+        background-position: center center;
+    }
+
+    .list .address .sign {
+        display: none;
+        position: absolute;
+        top: 45px;
+        left: 8px;
+        width: 35px;
+        height: 14px;
+        line-height: 14px;
+        font-size: 12px;
+        color: #444;
+        text-align: center;
+    }
+
+    .list .address .sign-1 {
+        display: block;
+    }
+
+    .list .address .info {
+        position: relative;
+        box-sizing: border-box;
+        padding-left: 36px;
+        padding-right: 28px;
+        width: 100%;
+        height: auto;
+    }
+
+    .list .address .info .top {
+        position: relative;
+        box-sizing: border-box;
+        width: 100%;
+        height: 32px;
+        color: #444;
+        line-height: 32px;
+        font-size: 14px;
+    }
+
+    .list .address .info .top .consignee {
+        display: inline;
+        width: auto;
+    }
+
+    .list .address .info .top .mobile {
+        display: inline;
+        width: auto;
+        margin-left: 16px;
+    }
+
+    .list .address .info .bottom {
+        position: relative;
+        width: 100%;
+        min-height: 32px;
+        line-height: 32px;
+        color: #888;
+        font-size: 14px;
+    }
+
+    .list .address .info .bottom .type {
+        display: inline;
+        width: auto;
+        color: #e3007f;
+        font-weight: bolder;
+    }
+
+    .list .address .info .bottom .text {
+        display: inline;
+        width: auto;
+    }
+
+    .list .address .arrow {
+        position: absolute;
+        right: 16px;
+        top: 32px;
+        width: 8px;
+        height: 16px;
+        background-image: url(../image/item_user_address_right.png);
+        background-repeat: no-repeat;
+        background-size: 8px 16px;
+        background-position: right center;
+    }
+
+    .list .icon-panel {
+        position: relative;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-flex-flow: row;
+        flex-flow: row;
+        box-sizing: border-box;
+        padding: 8px 16px;
+        width: 100%;
+        height: 80px;
+        background-color: #f1f5f8;
+    }
+
+    .list .icon-panel .icon {
+        width: 64px;
+        height: 64px;
+        border-radius: 8px;
+
+    }
+
+    .list .icon-panel .info {
+        position: relative;
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        flex: 1;
+        box-sizing: border-box;
+        padding-left: 16px;
+    }
+
+    .list .icon-panel .info .top {
+        position: relative;
+        box-sizing: border-box;
+        padding-bottom: 16px;
+        width: 100%;
+        height: 32px;
+        font-size: 16px;
+        color: #444;
+        text-align: left;
+    }
+
+    .list .icon-panel .info .bottom {
+        position: relative;
+        box-sizing: border-box;
+        padding-top: 16px;
+        width: 100%;
+        height: 32px;
+        font-size: 16px;
+        color: #444;
+        text-align: left;
+    }
+
+    .list .icon-panel .right {
+        box-sizing: border-box;
+        width: 40px;
+        height: 64px;
+        padding-top: 50px;
+        font-size: 14px;
+        text-align: right;
+    }
+
+    .list .button{
+        position: relative;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-flex-flow: row;
+        flex-flow: row;
+        box-sizing: border-box;
+        padding: 8px 16px;
+        width: 100%;
+        height: 40px;
+        background-color: #f1f5f8;
+    }
+
+    .list .button .item{
+        position: absolute;;
+        right: 70px;
+        box-sizing: border-box;
+        width: auto;
+        height: 24px;
+        padding: 2px 4px;
+        font-size: 14px;
+        text-align: right;
+        color: #e3007f;
+        border-radius: 19px;
+        border: 1px solid #e3007f;
+    }
+
+    .list .button .item2{
+        position: absolute;;
+        right: 20px;
+        box-sizing: border-box;
+        width: auto;
+        height: 24px;
+        padding: 2px 4px;
+        font-size: 14px;
+        text-align: right;
+        color: #e3007f;
+        border-radius: 19px;
+        border: 1px solid #e3007f;
+    }
+
+    .empty {
+        display: block;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: #fff;
+        background-image: url(../image/myorder_empty.png);
+        background-repeat: no-repeat;
+        background-size: auto 93px;
+        background-position: center 50px;
+    }
+
+    .highlight {
+        opacity: 0.7;
+    }
+    </style>
+</head>
+
+<body>
+    <section id="list" class="list"></section>
+    <section id="empty" class="empty"></section>
+</body>
+<script type="text/template" id="template">
+    {{~it:value:index}}
+    <div class="address">
+        <div class="icon"></div>
+        <div class="info">
+            <div class="top">
+                <div class="consignee">周明</div>
+                <div class="mobile">13886107793</div>
+            </div>
+            <div class="bottom">
+                <div class="type">【学校】</div>
+                <div class="text">湖北省武汉市洪山区升升公寓C栋145</div>
+            </div>
+        </div>
+    </div>
+    <div class="icon-panel">
+        <image class="icon" src="{{=value.ware.thumbnail.url}}">
+        <div class="info">
+            <div class="top">{{=value.ware.name}}</div>
+            <div class="bottom">￥{{=value.ware.price}}</div>
+        </div>
+        <div class="right">{{=value.number}}</div>
+    </div>
+    <div class="button">
+            <div class="item" id="item" tapmode onclick="item('{{=value.id}}');">确定</div>
+            <div class="item2" id="item2" tapmode onclick="item2('{{=value.id}}');">取消</div>
+    </div>
+    {{~}}
+</script>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/doT.min.js"></script>
+<script type="text/javascript">
+apiready = function() {
+    initEventListener();
+    fnGetOrder();
+};
+
+function initEventListener(){
+    api.addEventListener({
+        name: 'UpdateOrder'
+    }, function(ret, err){
+        if( ret ){
+             //alert( JSON.stringify( ret ) );
+             fnGetOrder();
+            //  window.location.reload();
+        }else{
+             alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+function fnGetOrder(){
+    //alert(api.pageParam.orderType);
+    if(api.pageParam.orderType == 0){
+        var params = {
+            fields: {},
+            where: {
+                type:1
+            },
+            skip:0,
+            include: ['warePointer']
+        };
+    }else if (api.pageParam.orderType == 1){
+        var params = {
+            fields: {},
+            where: {
+                type:4
+            },
+            skip:0,
+            include: ['warePointer']
+        };
+    }else {
+        alert("api.pageParam.orderType错误！");
+        return;
+    }
+
+    params = $api.jsonToStr(params);
+    api.ajax({
+        url: 'http://d.apicloud.com/mcm/api/order?filter=' + params,
+        method: 'get',
+        headers: {
+            "X-APICloud-AppId":	"A6000926714852",
+            "X-APICloud-AppKey":"5fe9e06dfbe11c046d6e760665bd6b335d6173b6.1556419150650"
+        }
+    },function(ret, err){
+        if (ret) {
+            //alert( JSON.stringify( ret ) );
+            fnUpdateOrderList(ret);
+            //alert(ret.length);
+            if(ret.length>0){
+                fnShowOrderList(true);
+            }else {
+                fnShowOrderList(false);
+            }
+        } else {
+            alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+function fnUpdateOrderList(data_){
+    var list = $api.byId('list');
+    // 编译模板函数
+    var tempFn = doT.template($api.byId('template').innerHTML);
+    // 使用模板函数生成HTML文本
+    var resultHTML = tempFn(data_);
+    list.innerHTML = resultHTML;
+
+    // fnShowButton(data_,api.pageParam.orderType);
+}
+
+// function fnShowButton(data_,orderType_){
+//     alert( JSON.stringify( data_ ) );
+//     alert(data_.length);
+//     alert(orderType_);
+//     for(var i=0;i<data_.length;i++){
+//         var item = $api.byId('item_'+orderType_);
+//         var item2 = $api.byId('item2_'+orderType_);
+//         if(orderType_ == 0){
+//             item.innerHTML = '付款';
+//             item2.style.display = 'none';
+//         }else if (orderType_ == 1) {
+//             item.innerHTML = '已收货';
+//             item2.style.display = 'none';
+//         }else if (orderType_ == 2) {
+//             item.style.display = 'none';
+//             item2.style.display = 'none';
+//         }
+//     }
+// }
+
+function fnShowOrderList(show_){
+    var empty = $api.byId('empty');
+    var list = $api.byId('list');
+    if (show_) {
+        empty.style.display = 'none';
+        list.style.display = 'block';
+    } else {
+        empty.style.display = 'block';
+        list.style.display = 'none';
+    }
+}
+
+function item(data_){
+    //alert(data_);
+    if(api.pageParam.orderType == 0){
+        api.toast({
+            msg: '已接受订单',
+            duration: 2000,
+            location: 'bottom'
+        });
+        fnChangeType2(data_);
+        api.sendEvent({
+            name: 'UpdateOrder'
+        });
+
+    }else if (api.pageParam.orderType == 1) {
+        return;
+    }else{
+        alert("api.pageParam.orderType错误！");
+        return;
+    }
+}
+
+function item2(data_){
+    // alert(data_);
+    if(api.pageParam.orderType == 0){
+        api.toast({
+            msg: '已拒绝订单',
+            duration: 2000,
+            location: 'bottom'
+        });
+        fnChangeType5(data_);
+        api.sendEvent({
+            name: 'UpdateOrder',
+        });
+    }else if (api.pageParam.orderType == 1) {
+        return;
+    }else {
+        alert("api.pageParam.orderType错误！");
+        return;
+    }
+}
+
+function fnChangeType2(data_){
+    api.ajax({
+        url: 'https://d.apicloud.com/mcm/api/order/' + data_,
+        method: 'put',
+        headers: {
+          "X-APICloud-AppId":	"A6000926714852",
+          "X-APICloud-AppKey":"5fe9e06dfbe11c046d6e760665bd6b335d6173b6.1556419150650",
+        },
+        data: {
+            values: {
+                type: 2
+            }
+        }
+    },function(ret, err){
+        if (ret) {
+            //alert( JSON.stringify( ret ) );
+        } else {
+            alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+function fnChangeType5(data_){
+    api.ajax({
+        url: 'https://d.apicloud.com/mcm/api/order/' + data_,
+        method: 'put',
+        headers: {
+          "X-APICloud-AppId":	"A6000926714852",
+          "X-APICloud-AppKey":"5fe9e06dfbe11c046d6e760665bd6b335d6173b6.1556419150650",
+        },
+        data: {
+            values: {
+                type: 5
+            }
+        }
+    },function(ret, err){
+        if (ret) {
+            //alert( JSON.stringify( ret ) );
+        } else {
+            alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+</script>
+
+</html>

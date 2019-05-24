@@ -5,67 +5,200 @@
     <meta charset="utf-8">
     <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
     <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
-    <title>Hello APP</title>
+    <title>首页</title>
     <link rel="stylesheet" type="text/css" href="../css/api.css" />
     <style>
-        label {
-            margin: 10px;
-            font-size: 24px;
+        header{
+          position:relative;
+          width:100%;
+          height:50px;
+          background-color: #e1017e;
         }
-
-        ul {
-            margin-bottom: 10px;
+        header h1{
+          position:relative;
+          height:50px;
+          line-height:50px;
+          font-size:20px;color:#fff;text-align: center;
         }
-
-        ul li {
-            margin: 5px 10px;
-            padding: 5px;
-            color: #000;
-            word-wrap: break-word;
+        header .left{
+          position:absolute;
+          bottom: 0;
+          left: 20px;
+          width:100px;
+          height:50px;
+          line-height:50px;
+          font-size:15px;color:#fff;
+        }
+        header .right{
+          position:absolute;
+          bottom: 0;
+          right:0;
+          width:40px;
+          height:50px;
+          background:url(../image/home_membercenter.png);
+          background-size: 30px 30px;
+          background-position: center center;
+          background-repeat:no-repeat;
+        }
+        nav{
+          display: -webkit-box;
+          display: -webkit-flex;
+          display: flex;
+          -webkit-blox-orient: horizontal;
+          -webkit-flex-flow:row;
+          flex-flow: row;
+          position: relative;
+          width:100%;
+          height:40px;
+          background-color: #e1017e;
+        }
+        nav .menu{
+          -webkit-box-flex: 1;
+          -webkit-flex: 1;
+          flex: 1;
+          width: 100%;
+          height: 40px;
+          font-size: 13px;color: #f973b8;text-align: center;
+        }
+        nav .menu.selected{
+          font-size: 14px;color: #fff;font-weight: bolder;
         }
     </style>
 </head>
-
 <body>
-    <label>Hello APP</label>
-    <div id='sys-info'></div>
+    <header id="header">
+      <h1>萌宠商城</h1>
+      <div class="left" tapmode onclick="fnOpenSelectWin();">搜索</div>
+      <div class="right" tapmode onclick="fnOpenPersonCenterWin();"></div>
+    </header>
+    <nav id="nav">
+      <div class="menu selected" tapmode onclick="fnSetNavMenuIndex(0)">热门爱汪</div>
+      <div class="menu" tapmode onclick="fnSetNavMenuIndex(1)">热门爱喵</div>
+      <div class="menu" tapmode onclick="fnSetNavMenuIndex(2)">宠物食品</div>
+      <div class="menu" tapmode onclick="fnSetNavMenuIndex(3)">宠物用品</div>
+    </nav>
 </body>
 <script type="text/javascript" src="../script/api.js"></script>
 <script type="text/javascript">
-    apiready = function() {
-        var ver = api.version;
-        var sType = api.systemType;
-        var sVer = api.systemVersion;
-        var id = api.deviceId;
-        var model = api.deviceModel;
-        var name = api.deviceName;
-        var cType = api.connectionType;
-        var winName = api.winName;
-        var winWidth = api.winWidth;
-        var winHeight = api.winHeight;
-        var frameName = api.frameName || '';
-        var frameWidth = api.frameWidth || '';
-        var frameHeight = api.frameHeight || '';
+apiready = function() {
+    fnInitEventListener();
 
-        var str = '<ul>';
-        str += '<li>引擎版本信息: ' + ver + '</li>';
-        str += '<li>系统类型: ' + sType + '</li>';
-        str += '<li>系统版本: ' + sVer + '</li>';
-        str += '<li>设备标识: ' + id + '</li>';
-        str += '<li>设备型号: ' + model + '</li>';
-        str += '<li>设备名称: ' + name + '</li>';
-        str += '<li>网络状态: ' + cType + '</li>';
-        str += '<li>主窗口名字: ' + winName + '</li>';
-        str += '<li>主窗口宽度: ' + winWidth + '</li>';
-        str += '<li>主窗口高度: ' + winHeight + '</li>';
-        str += '<li>子窗口名字: ' + frameName + '</li>';
-        str += '<li>子窗口宽度: ' + frameWidth + '</li>';
-        str += '<li>子窗口高度: ' + frameHeight + '</li>';
-        str += '</ul>';
+    var header = $api.byId('header');
+    var nav = $api.byId('nav');
+    $api.fixStatusBar(header);
+    headerH = $api.offset(header).h;
+    navH = $api.offset(nav).h;
 
-        $api.byId('sys-info').innerHTML = str;
+    menus = $api.domAll(nav, '.menu');
+    var frames = [];     //存有4个frame的数组
 
-    };
+    for (var i = 0; i < menus.length; i++) {
+        frames.push({
+            name:'main_frame_' + i,
+            url:'./main_frame.html',
+            pageParam:{
+                wareTypeIndex:i
+            }
+        });
+    }
+
+    api.openFrameGroup ({
+        name: 'mainFrameGroup',
+        scrollEnabled: true,
+        rect: {
+            x: 0,
+            y: headerH + navH,
+            w: 'auto',
+            h: 'auto'
+        },
+        index: 0,
+        frames: frames          //此frames是上面存有4个frame的数组
+    }, function(ret, err){
+        fnSetNavMenuSelected(ret.index);
+    });
+
+    api.openFrame({
+        name: 'minicart_frame',
+        url: './minicart_frame.html',
+        rect: {
+            x: 0,
+            y: api.winHeight - 55,
+            w: 150,
+            h: 34
+        },
+        pageParam: {
+            name: 'test'
+        },
+        bounces: false
+    });
+
+    api.bringFrameToFront({
+        from: 'minicart_frame'
+    });
+};
+
+var menus,headerH,navH;
+
+function fnSetNavMenuIndex(index_){
+    fnSetNavMenuSelected(index_);    //设置frame组当前可见frame
+    api.setFrameGroupIndex({
+        name: 'mainFrameGroup',
+        index: index_,
+        scroll: true
+    });
+}
+
+function fnSetNavMenuSelected(index_){
+    for (var i = 0; i < menus.length; i++) {
+        if (index_ == i) {
+            $api.addCls(menus[i], 'selected');
+        }
+        else {
+            $api.removeCls(menus[i], 'selected');
+        }
+    }
+}
+
+function fnOpenPersonCenterWin(){    //打开个人中心界面
+    var userInfo = $api.getStorage('userInfo');
+    if(userInfo && userInfo.userId){
+        api.openWin({
+            name: 'personalcenter',
+            url: './personalcenter.html',
+        });
+    }else {
+        api.openWin({
+            name: 'login',
+            url: './login.html',
+        });
+    }
+}
+
+function fnInitEventListener(){    //监听返回按键，退出程序
+    api.addEventListener({
+        name:'keyback'
+    }, function(ret, err){
+        api.confirm({
+            title: '提示',
+            msg: '是否退出应用',
+            buttons: ['确定', '取消']
+        }, function(ret, err){
+            if(ret.buttonIndex == 1){
+                api.closeWidget({
+                    silent:true
+                });
+            }
+        });
+    });
+}
+
+function fnOpenSelectWin(){
+    api.openWin({
+        name: 'select',
+        url: './select.html',
+    });
+}
+
 </script>
 
 </html>

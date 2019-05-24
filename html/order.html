@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>下单</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+    html,
+    body {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-flex-flow: column;
+        flex-flow: column;
+        height: 100%;
+    }
+
+    header {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        background-color: #e3007f
+    }
+
+    header .back {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 50px;
+        z-index: 2;
+    }
+
+    header .back img {
+        margin-top: 16px;
+        margin-left: 12px;
+        width: 11px;
+        height: 18px;
+    }
+
+    header .title {
+        position: relative;
+        width: 100%;
+        height: 50px;
+        text-align: center;
+        color: #fff;
+        font-size: 20px;
+        line-height: 50px;
+    }
+
+    section {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        flex: 1;
+    }
+
+    footer {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-flex-flow: row;
+        flex-flow: row;
+        width: 100%;
+        height: 50px;
+        background-color: #000;
+        border-top: 1px solid #d1d1d1;
+    }
+
+    footer .panel {
+        -webkit-box-flex: 1;
+        -webkit-flex: 1;
+        flex: 1;
+        height: 50px;
+        box-sizing: border-box;
+        padding-left: 16px;
+        line-height: 50px;
+        color: #fff;
+        font-size: 18px;
+        text-align: left;
+    }
+
+    footer .buy {
+        width: 112px;
+        height: 50px;
+    }
+
+    footer .buy .buy-button {
+        width: 112px;
+        height: 40px;
+        margin-top: 5px;
+    }
+
+    .highlight {
+        opacity: 0.7;
+    }
+    </style>
+</head>
+
+<body>
+    <header id="header">
+        <div class="back" tapmode onclick="api.closeWin();">
+            <img src="../image/back.png">
+        </div>
+        <div class="title">
+            确认订单
+        </div>
+    </header>
+    <section></section>
+    <footer id="footer">
+        <div class="panel" id="panel">总金额:￥1550.0</div>
+        <div class="buy" tapmode onclick="fnBuy();">
+            <img class="buy-button" src="../image/confirm.png">
+        </div>
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+
+apiready = function() {
+    var header = $api.byId('header');
+    var footer = $api.byId('footer');
+    $api.fixStatusBar(header);
+    var headerH = $api.offset(header).h;
+    var footerH = $api.offset(footer).h;
+
+    var panel = $api.byId('panel');
+    panel.innerHTML = '总金额：￥' + api.pageParam.amount*1.1 ;
+
+    //alert( JSON.stringify( api.pageParam ) );
+
+    // 打开购物车Frame
+    api.openFrame({
+        name: 'order_frame',
+        url: './order_frame.html',
+        rect: {
+            x: 0,
+            y: headerH,
+            w: 'auto',
+            h: api.winHeight - headerH - footerH
+        },
+        pageParam: {
+            amount:api.pageParam.amount,
+        },
+        bounces: false
+    });
+};
+
+function fnBuy () {
+    api.toast({
+        msg: '支付成功',
+        duration: 2000,
+        location: 'bottom'
+    });
+
+    var params = {
+        fields: {},
+        where: {
+            orderInfo: $api.getStorage('orderInfoId')
+        },
+        skip:0,
+        limit: api.pageParam.number
+    };
+    params = $api.jsonToStr(params);
+    api.ajax({
+        url: 'http://d.apicloud.com/mcm/api/order?filter=' + params,
+        method: 'get',
+        headers: {
+            "X-APICloud-AppId":	"A6000926714852",
+            "X-APICloud-AppKey":"5fe9e06dfbe11c046d6e760665bd6b335d6173b6.1556419150650"
+        }
+    },function(ret, err){
+        if (ret) {
+            //alert( JSON.stringify( ret ) );
+            fnForChangeType(ret);
+        } else {
+            alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+function fnForChangeType(data_){
+    for(var i=0;i<api.pageParam.number;i++){
+        fnChangeType(data_[i]);
+    }
+}
+
+function fnChangeType(data_){
+    api.ajax({
+        url: 'https://d.apicloud.com/mcm/api/order/' + data_.id,
+        method: 'put',
+        headers: {
+          "X-APICloud-AppId":	"A6000926714852",
+          "X-APICloud-AppKey":"5fe9e06dfbe11c046d6e760665bd6b335d6173b6.1556419150650",
+        },
+        data: {
+            values: {
+                type: 1
+            }
+        }
+    },function(ret, err){
+        if (ret) {
+            //alert( JSON.stringify( ret ) );
+        } else {
+            alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+</script>
+
+</html>

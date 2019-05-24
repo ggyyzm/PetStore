@@ -1,0 +1,169 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>mini购物车</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+    html,
+    body {
+        height: 100%;
+        background-color: transparent;
+    }
+
+    section {
+        display: inline-block;
+        box-sizing: border-box;
+        padding: 4px;
+        width: auto;
+        height: 33px;
+        min-width: 35px;
+        line-height: 25px;
+        color: #fff;
+        font-size: 12px;
+        background-image: url(../image/minicart.png);
+        background-repeat: no-repeat;
+        background-size: auto 33px;
+        background-position: right center;
+    }
+
+    .count {
+        display: none;
+        box-sizing: border-box;
+        padding-left: 4px;
+        padding-right: 4px;
+        width: auto;
+        min-width: 25px;
+        height: 25px;
+        border-radius: 13px;
+        background-color: #fff;
+        text-align: center;
+        color: #e3007f;
+    }
+    </style>
+</head>
+
+<body>
+    <section>
+        <span class="prefix">￥</span>
+        <span id="amount" class="amount">0</span>
+        <span id="count" class="count"></span>
+    </section>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/db.js"></script>
+<script type="text/javascript">
+apiready = function() {
+    initEventListener();
+    getWareListFromDB();
+};
+
+function initEventListener(){
+    api.addEventListener({
+        name: 'tap'
+    }, function(ret, err){
+        fnOpenShoppingCartWin();
+    });
+    api.addEventListener({
+        name: 'updateShoppingCart'
+    }, function(ret, err){
+        if( ret ){
+             //alert( JSON.stringify( ret ) );
+             var result = $db.select(ret.value.wareId);
+             //alert( JSON.stringify( result ) );
+             if(result && result.data.length > 0){
+                 $db.update(ret.value.wareId, ret.value.wareCount);
+             }else{
+                 $db.insert(ret.value.wareId, ret.value.wareCount);
+             }
+             getWareListFromDB();
+        }else{
+             alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+function fnOpenShoppingCartWin(){
+    var userInfo = $api.getStorage('userInfo');
+    if(userInfo && userInfo.userId){
+        api.openWin({
+            name: 'shoppingcart',
+            url: './shoppingcart.html',
+        });
+    }else {
+        alert("请先登录！");
+        return;
+    }
+}
+
+function getWareListFromDB(){
+    var ret = $db.select();
+    //alert($api.jsonToStr(ret));
+    if(ret && ret.data.length > 0){
+        fnGetWareList(ret.data);
+    }
+}
+
+function fnGetWareList(wareList_){
+    var wares = [];
+    for(var i=0;i<wareList_.length;i++){
+        wares.push(wareList_[i].wareId);
+    }
+    var params = {
+        fields: {},
+        where: {
+            id:{
+                inq:wares
+            }
+        },
+        skip:0,
+        limit: wares.length
+    }
+    params = $api.jsonToStr(params);
+    api.ajax({
+        url: 'http://d.apicloud.com/mcm/api/ware?filter=' + params,
+        method: 'get',
+        headers: {
+          "X-APICloud-AppId":	"A6000926714852",
+          "X-APICloud-AppKey":"5fe9e06dfbe11c046d6e760665bd6b335d6173b6.1556419150650"
+        }
+    },function(ret, err){
+        if (ret) {
+            //alert( JSON.stringify( ret ) );
+            for(var i=0;i<ret.length;i++){
+                for(var j=0;j<wareList_.length;j++){
+                    if(ret[i].id == wareList_[j].wareId){
+                        ret[i].wareCount = wareList_[j].wareCount;
+                    }
+                }
+            }
+            fnGetShoppingCartAmount(ret);
+        } else {
+            alert( JSON.stringify( err ) );
+        }
+    });
+}
+
+function fnGetShoppingCartAmount(data_){
+    //console.log($api.jsonToStr(data_));
+    var amountValue=0;
+    var countValue=0;
+    for(var i=0;i<data_.length;i++){
+        countValue += parseInt(data_[i].wareCount);
+        amountValue += parseFloat(data_[i].price) * parseInt(data_[i].wareCount);
+    }
+    amountValue = Math.round(amountValue * 10)/10;
+
+    var amount = $api.byId('amount');
+    var count = $api.byId('count');
+    count.style.display = (countValue!=0)?'in-line':'none';
+    amount.innerHTML = amountValue;
+}
+
+
+</script>
+
+</html>

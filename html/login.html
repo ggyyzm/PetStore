@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0, minimum-scale=1.0, user-scalable=0, initial-scale=1.0, width=device-width" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>登录</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+        header{
+          position:relative;
+          width:100%;
+          height:50px;
+          background-color: #f0f;
+        }
+        header h1{
+          position:relative;
+          height:50px;
+          line-height:50px;
+          font-size:20px;color:#fff;text-align: center;
+        }
+        header .left{
+          position:absolute;
+          bottom: 0;
+          left:0;
+          width:100px;
+          height:50px;
+          line-height:50px;
+          font-size:16px;color:#fff;text-align: center;
+        }
+        header .right{
+          position:absolute;
+          bottom: 0;
+          right:0;
+          width:100px;
+          height:50px;
+          line-height:50px;
+          font-size:16px;color:#fff;text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header id="header">
+      <h1>登录</h1>
+      <div class="left" tapmode onclick="api.closeWin()">返回</div>
+      <div class="right" tapmode onclick="fnOpenRegisterWin()">注册</div>
+    </header>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+apiready = function() {
+    var header = $api.byId('header');
+    $api.fixStatusBar(header);
+    var headerH = $api.offset(header).h;
+    api.openFrame({
+        name: 'login_frame',
+        url: './login_frame.html',
+        rect: {
+            x: 0,
+            y: headerH,
+            w: 'auto',
+            h: 'auto'
+        },
+        bounces: true,
+    });
+};
+
+function fnOpenRegisterWin(){
+    api.openWin({
+        name: 'register',
+        url: './register.html',
+    });
+}
+
+</script>
+
+</html>
