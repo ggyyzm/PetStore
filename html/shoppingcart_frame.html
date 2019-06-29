@@ -281,7 +281,6 @@ function fnGetWareList(wareList_) {
             fnUpdateWareListByShoppingCart(ret);
             // 保存为当前页面的购物车信息，便于在当前页面中添加或删除商品是操作
             curShoppingCart = ret;
-            number = curShoppingCart.length;
             // 计算购物车中的商品总数及总金额
             fnGetShoppingCartAmount(ret);
         } else {
@@ -319,6 +318,8 @@ function fnGetShoppingCartAmount(data_) {
         fnShowWareList(false);
     }
     amount = amountValue;
+
+    number = countValue;
     // 在购物车Window中显示
     api.execScript({
         name: 'shoppingcart',
@@ -439,11 +440,9 @@ function fnSetSelect(wareId_) {
     if (!$api.hasCls(wareSelect, 'select-off')) {
         $api.addCls(wareSelect, 'select-off');
         fnUpdateWareState(wareId_, 'off');
-        number--;
     } else {
         $api.removeCls(wareSelect, 'select-off');
         fnUpdateWareState(wareId_, 'on');
-        number++;
     }
 }
 
@@ -458,6 +457,7 @@ function fnCloseWin() {
 
 //供shoppingcart.html使用，将当前页信息保存到order数据表。
 function fnSaveOrder(){
+    $api.rmStorage('orderInfoId');
     //alert( JSON.stringify( curShoppingCart ) );
     api.ajax({
         url: 'https://d.apicloud.com/mcm/api/orderInfo',
@@ -480,7 +480,7 @@ function fnSaveOrder(){
 //由于for循环不能和异步函数在同一个函数中，所以将saveOrder分成两部分
 function fnForSaveOrder(orderId_){
     for(var i=0;i<curShoppingCart.length;i++){
-        if(curShoppingCart[i].wareState == 'on')
+        if(curShoppingCart[i].wareState == 'on' && curShoppingCart[i].wareCount != 0)
         {
             fnSaveToOrder(curShoppingCart[i],orderId_);
         }

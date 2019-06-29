@@ -129,7 +129,7 @@ apiready = function() {
     var footerH = $api.offset(footer).h;
 
     var panel = $api.byId('panel');
-    panel.innerHTML = '总金额：￥' + api.pageParam.amount*1.1 ;
+    panel.innerHTML = '总金额：￥' + Math.round(api.pageParam.amount*1.1) ;
 
     //alert( JSON.stringify( api.pageParam ) );
 
@@ -145,6 +145,7 @@ apiready = function() {
         },
         pageParam: {
             amount:api.pageParam.amount,
+            number:api.pageParam.number
         },
         bounces: false
     });
@@ -184,6 +185,8 @@ function fnBuy () {
 }
 
 function fnForChangeType(data_){
+    //alert(api.pageParam.number);
+    //alert( JSON.stringify( data_ ) );
     for(var i=0;i<api.pageParam.number;i++){
         fnChangeType(data_[i]);
     }

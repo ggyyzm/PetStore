@@ -235,7 +235,17 @@ function fnOpenOrderWin () {
         script: 'fnSaveOrder();'
     });
 
-    fnRealOpenOrderWin();
+    api.alert({
+        title: '提示',
+        msg: '成功加入订单',
+    }, function(ret, err){
+        if( ret ){
+             //alert( JSON.stringify( ret ) );
+            fnRealOpenOrderWin();
+        }else{
+             alert( JSON.stringify( err ) );
+        }
+    });
 }
 
 function fnRealOpenOrderWin(){
